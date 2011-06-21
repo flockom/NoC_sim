@@ -57,6 +57,7 @@ void App_test::send(){
   int pkt_id = 0;
   while(sim_count < TG_NUM){      
     if(dcheck()){
+      wait(execution_time);
       flit *flit_out;
       for(int i = 0;i < child.size();i++){
 	for(int ii = 0; ii < child_volume[child[i]];ii++){
