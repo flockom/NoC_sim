@@ -77,8 +77,14 @@ void App_test::recv(){
   while(true){
     wait();
     if(flit_inport.event()){
-      flit flit_read = flit_inport.read();
-      printf("Tile-%d: Recieved packet from %d at %lld\n",tileID,flit_read.src,sim_count);
+      flit flit_in = flit_inport.read();
+      UI src = flit_in.src;
+      //printf("Tile-%d: Recieved packet from %d at %lld\n",tileID,src,sim_count);
+      if(++recv_buf[src] == parent_volume[src]){
+	parent_period_count[src]++;
+	recv_buf[src] = 0;
+	printf("Tile-%d: Dependency #%d satisfied from %d\n",tileID,parent_period_count[src],src);
+      }      
     }
   }
 }
