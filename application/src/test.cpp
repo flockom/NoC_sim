@@ -59,10 +59,11 @@ void App_test::send(){
     if(dcheck()){
       flit *flit_out;
       for(int i = 0;i < child.size();i++){
-	for(int ii = 0; ii < child_volume[child[i]];ii++)
-	flit_out = create_hdt_flit(pkt_id++,0,child[i]);
-	flit_outport.write(*flit_out);	
-	wait(2);
+	for(int ii = 0; ii < child_volume[child[i]];ii++){
+	  flit_out = create_hdt_flit(pkt_id++,0,child[i]);
+	  flit_outport.write(*flit_out);	
+	  wait(2);
+	}
       }      
     }
     else{
