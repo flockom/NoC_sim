@@ -93,6 +93,10 @@ void App_test::recv(){
 }
 
 bool App_test::dcheck(){  
+  for(int i=0;i<parent.size();i++){
+    if(parent_period_count[parent[i]]<=period_count)
+      return false;
+  }
   return true;
 }
 
