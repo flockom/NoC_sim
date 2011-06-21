@@ -6,6 +6,7 @@ App_test::App_test(sc_module_name App_test): ipcore(App_test){
 }
 
 void App_test::init(){
+  period_count = 0;
   char str_id[20];     // 20 digits in UL, log(2^64)
   sprintf(str_id,"%d",tileID);
   string traffic_filename = string("config/traffic/tile-") + string(str_id);
@@ -52,20 +53,22 @@ void App_test::init(){
 
 void App_test::send(){
   wait(WARMUP);
-  if(child.size() == 0)
-    return;
   int pkt_id = 0;
   while(sim_count < TG_NUM){      
     if(dcheck()){
       wait(execution_time);
-      flit *flit_out;
-      for(int i = 0;i < child.size();i++){
-	for(int ii = 0; ii < child_volume[child[i]];ii++){
-	  flit_out = create_hdt_flit(pkt_id++,0,child[i]);
-	  flit_outport.write(*flit_out);	
-	  wait(2);
+      if(child.size() > 0){	
+	flit *flit_out;
+	for(int i = 0;i < child.size();i++){
+	  for(int ii = 0; ii < child_volume[child[i]];ii++){
+	    flit_out = create_hdt_flit(pkt_id++,0,child[i]);
+	    flit_outport.write(*flit_out);	
+	    wait(2);
+	  }
 	}
-      }      
+      }
+      period_count++;
+      printf("Tile-%d: Completed period #%d\n",tileID,period_count);
     }
     else{
       wait();
