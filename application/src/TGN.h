@@ -1,5 +1,5 @@
-#ifndef _App_test_H_
-#define _App_test_H_
+#ifndef _TGN_H_
+#define _TGN_H_
 
 #include "../../core/ipcore.h"
 #include <fstream>
@@ -9,10 +9,10 @@
 
 using namespace std;
 
-struct App_test : public ipcore {
+struct TGN : public ipcore {
 	
 	/// Constructor
-	SC_CTOR(App_test);
+	SC_CTOR(TGN);
 	
 	// PROCESSES /////////////////////////////////////////////////////
 	void send();			///< send flits

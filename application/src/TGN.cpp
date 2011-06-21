@@ -1,11 +1,11 @@
-#include "test.h"
+#include "TGN.h"
 #include "../../config/extern.h"
 
-App_test::App_test(sc_module_name App_test): ipcore(App_test){
+TGN::TGN(sc_module_name TGN): ipcore(TGN){
   SC_CTHREAD(init, clock.pos());
 }
 
-void App_test::init(){
+void TGN::init(){
   period_count = 0;
   char str_id[20];     // 20 digits in UL, log(2^64)
   sprintf(str_id,"%d",tileID);
@@ -51,7 +51,7 @@ void App_test::init(){
   instream.close();
 }
 
-void App_test::send(){
+void TGN::send(){
   wait(WARMUP);
   int pkt_id = 0;
   while(sim_count < TG_NUM){      
@@ -76,7 +76,7 @@ void App_test::send(){
   }
 }
 
-void App_test::recv(){
+void TGN::recv(){
   while(true){
     wait();
     if(flit_inport.event()){
@@ -92,7 +92,7 @@ void App_test::recv(){
   }
 }
 
-bool App_test::dcheck(){  
+bool TGN::dcheck(){  
   for(int i=0;i<parent.size();i++){
     if(parent_period_count[parent[i]]<=period_count)
       return false;
@@ -103,7 +103,7 @@ bool App_test::dcheck(){
 
 extern "C"{
     ipcore *maker(){
-      return new App_test("App_test");
+      return new TGN("TGN");
     }
 }
 
