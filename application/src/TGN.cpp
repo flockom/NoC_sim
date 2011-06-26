@@ -91,16 +91,32 @@ void TGN::send(){
 }
 
 void TGN::recv(){
+
+  /*~+~+~+~+~+~+~+~+~For Nirgam sim_results+~+~+~+~+~+~+~+~+~+~+~+~+~*/      
+  int difference;
+  sum = 0; 
+  /*~+~+~+~+~+~+~+~+~+~+~+~+~+~+~+~+~+~+~+~+~+~+~+~+~+~+~+~*/
+
   while(true){
     wait();
     if(flit_inport.event()){
       flit flit_in = flit_inport.read();
+
+      /*~+~+~+~+~+~+~+~+~For Nirgam sim_results+~+~+~+~+~+~+~+~*/      
+      flit_in.simdata.atimestamp = sim_count;  
+      flit_in.simdata.atime = sc_time_stamp(); 
+      difference = 0;
+      difference = flit_in.simdata.atimestamp-flit_in.simdata.gtimestamp;
+      count_total++;
+      sum+=difference;
+      /*~+~+~+~+~+~+~+~+~+~+~+~+~+~+~+~+~+~+~+~+~+~+~+~+~+~+~+~*/
+
       UI src = flit_in.src;
       //printf("Tile-%d: Recieved packet from %d at %lld\n",tileID,src,sim_count);
       trafstream<<"recv "<< src << " " 
 		<< flit_in.simdata.gtimestamp << " " 
 		<< sim_count << " "
-		<< sim_count - flit_in.simdata.gtimestamp<<endl;
+		<< difference <<endl;
       if(++recv_buf[src] == parent_volume[src]){
 	parent_period_count[src]++;
 	recv_buf[src] = 0;
