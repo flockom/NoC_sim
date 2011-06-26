@@ -27,6 +27,7 @@ struct TGN : public ipcore {
 	//VARIABLES
 	ULL execution_time;             /* the execution time for this node in clock cycles see ipcore.sim_count*/
 	UI period_count;                /* #times this task has executed. better name?*/
+	ofstream trafstream;            /*output stream for logging*/
 	
 
 	vector<UI> child;               /*list of child tiles ctid*/

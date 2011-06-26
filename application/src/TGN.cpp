@@ -6,9 +6,23 @@ TGN::TGN(sc_module_name TGN): ipcore(TGN){
 }
 
 void TGN::init(){
+  /*set the period count*/
   period_count = 0;
+ 
+  /*get the tileID*/
   char str_id[20];     // 20 digits in UL, log(2^64)
   sprintf(str_id,"%d",tileID);
+
+  /*delete the log file log/traffic/tile-n*/
+  string logfile = string("./log/traffic/tile-") + string(str_id);
+  string rmlog = string("rm ") + logfile;
+  cout << "Running " << rmlog << endl;
+  system(rmlog.c_str());
+
+  /*open the traffic stream*/  
+  trafstream.open(logfile.c_str());
+  
+  /*load the config files config/traffic/tile-n*/  
   string traffic_filename = string("config/traffic/tile-") + string(str_id);
   ifstream instream;
   instream.open(traffic_filename.c_str());
@@ -83,10 +97,14 @@ void TGN::recv(){
       flit flit_in = flit_inport.read();
       UI src = flit_in.src;
       //printf("Tile-%d: Recieved packet from %d at %lld\n",tileID,src,sim_count);
+      trafstream<<"recv "<< src << " " 
+		<< flit_in.simdata.gtimestamp << " " 
+		<< sim_count << " "
+		<< sim_count - flit_in.simdata.gtimestamp<<endl;
       if(++recv_buf[src] == parent_volume[src]){
 	parent_period_count[src]++;
 	recv_buf[src] = 0;
-	printf("Tile-%d: Dependency #%d satisfied from %d\n",tileID,parent_period_count[src],src);
+	//printf("Tile-%d: Dependency #%d satisfied from %d\n",tileID,parent_period_count[src],src);
       }      
     }
   }
