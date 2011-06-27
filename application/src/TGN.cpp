@@ -23,12 +23,10 @@ void TGN::init(){
   trafstream.open(logfile.c_str());
   
   /*load the config files config/traffic/tile-n*/  
-  string traffic_filename = string("config/traffic/tile-") + string(str_id);
   ifstream instream;
-  instream.open(traffic_filename.c_str());
+  instream.open("config/traffic/TGN");
   if(!instream.is_open()){
-    cout << "TaskGraphNode:ERROR: config file \""
-	 <<traffic_filename<< "\" not found!\n";
+    cout << "TaskGraphNode:ERROR: config file \"config/traffic/TGN\" not found!\n";
     exit(1);
   }
   
@@ -36,30 +34,27 @@ void TGN::init(){
     string field;
     instream >> field;
     
-    if(field == "PARENT"){
-      UI tid;
-      instream >> tid;
-      parent.push_back(tid);
-      
+    if(field == "EDGE"){
+      UI ptid;
+      UI ctid;
       UI volume;
-      instream >> volume;
-      parent_volume[tid] = volume;
-      
-      recv_buf[tid] = 0;
-      parent_period_count[tid] = 0;	   	   
+      instream >> ptid >> ctid >> volume;
+      if(ptid == tileID){        /*this is the parent of this edge*/
+	child.push_back(ctid);      
+	child_volume[ctid] = volume;
+      }else if (ctid == tileID){ /*child of this edge*/
+	parent.push_back(ptid);
+	parent_volume[ptid] = volume;      
+	recv_buf[ptid] = 0;
+	parent_period_count[ptid] = 0;	   	   
+      }
     }
-    else if(field == "CHILD"){
-      UI tid;
-      instream >> tid;
-      child.push_back(tid);
-      
-      UI volume;
-      instream >> volume;
-      child_volume[tid] = volume;
-    }
-    else if(field == "EXEC"){
+    else if(field == "NODE"){
       UI exec;
-      instream >> execution_time;
+      UI tid;
+      instream >> tid >> exec;
+      if(tid == tileID)
+	execution_time = exec;
     }
   }
   instream.close();
@@ -67,6 +62,7 @@ void TGN::init(){
 
 void TGN::send(){
   wait(WARMUP);
+  if(child.size() < 1) return;
   int pkt_id = 0;
   while(sim_count < TG_NUM){      
     if(dcheck()){
