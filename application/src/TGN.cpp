@@ -72,6 +72,10 @@ void TGN::send(){
 	for(int i = 0;i < child.size();i++){
 	  for(int ii = 0; ii < child_volume[child[i]];ii++){
 	    flit_out = create_hdt_flit(pkt_id++,0,child[i]);
+	    while (!credit_in[0].read().freeBuf){
+	      printf("Tile-%d: Buffer is full!!!!zomg\n",tileID);
+	      wait();            
+	    }
 	    flit_outport.write(*flit_out);	
 	    wait(2);
 	  }
