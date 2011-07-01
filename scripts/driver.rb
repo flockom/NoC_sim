@@ -1,3 +1,8 @@
+# ttlatency.rb
+# Author: Frank Lockom
+# some routes for automating the nirgam task graph node (TGN) application
+
+
 # TODO: - run_replacement cannot do a replacement to a tile 
 #         which is in the default mapping
 #       - oal does not check the directory from nirgam.config that
