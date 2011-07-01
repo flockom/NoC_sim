@@ -4,10 +4,80 @@
 #         sim_results will be in
 # 
 
+# get best results from a mapping (like returned from run_all_replacements_given_faulty)
+# default:: the default overall average latency(no faulty cores)
+# m::       a hash of replacement stratedgy=>[overall average latency,tt_latency]
+def get_best_oal(default, m)
+  min = 10000 # yes this is dirty
+  best = nil
+  m.each_pair do |strat,oal|
+    tmin = (default-oal[0]).abs
+    if tmin < min
+      best = strat
+      min = tmin
+    end
+  end
+  return [best,m[best]]
+end
+
+def get_best_ttl(default,m)
+  min = 10000 # yes this is dirty
+  best = nil
+  m.each_pair do |strat,ttl|
+    avgttl = average_tt_latency(ttl[1])
+    tmin = (default-avgttl).abs
+    if tmin < min
+      best = strat
+      min = tmin
+    end
+  end
+  return [best,m[best]]
+end
+
+
+# does run_replacement with every possible stratedgy, given the faulty set
+# and the possible replacement cores
+#  
+# nirgam      -  the path to the nirgam root directory with a '/' at the end
+# tg          -  the TaskGraph file with default configuration. 
+#                ex nirgam/config/traffic/App2TG
+# faulty      -  faulty set from default configuration e.g. [3,27,20]
+# replacement -  available replacement tiles e.g. [5,11,17,23,29]
+def run_all_replacements_given_faulty(nirgam,tg,faulty,replacement)
+  results = Hash.new
+  mappings = get_mappings(faulty,replacement)
+  count = 1
+  mappings.each do |map|
+    puts "Progress: #{count}/#{mappings.length}"
+    count += 1
+    results[map] = run_replacement(nirgam,tg,map)
+  end
+  return results
+end
+
+# gives all possible mappings from a set of faulty cores f to
+# possible replacement cores r
+#
+# f::  an array of faulty cores ex. [3,4]
+# r::  the possible replacement cores ex. [5,11,17,23,29]
+#
+# returns an array of the mappings
+#  ex: [{3=>5,4=>23},{3=>23,4=>5},...] (20 of them for the example)
+def get_mappings(f,r)
+  results = Array.new
+  r.combination(f.length) do |comb|
+    comb.permutation do |perm|      
+      m = Hash.new
+      f.each_index {|i| m[f[i]] = perm[i]}
+      results.push(m)
+    end
+  end  
+  return results
+end
 
 # runs nirgam using the TGN application with a given replacement
 # stratedgy.
-# nirgam    -  the path to the nirgam root directory
+# nirgam    -  the path to the nirgam root directory with a '/' at the end
 # tg        -  the TaskGraph file with default configuration. 
 #              ex nirgam/config/traffic/App2TG
 # stratedgy -  replacement stratedgy of the form:
@@ -58,7 +128,17 @@ def get_tt_latency(dir)
   end
   #get the averages
   result.each_pair do |key,val|
-    result[key] = val/counts[key]
+    result[key] = val/counts[key].to_f
+  end
+  return result
+end
+
+# averages the task-task latencies, as returned by get_tt_latency
+# oal gives average per flit, this is average per link(regardless of #flits).
+def average_tt_latency(tt_latency)
+  result = 0
+  tt_latency.each_value do |v|
+    result += v/tt_latency.size.to_f
   end
   return result
 end
@@ -101,7 +181,7 @@ end
 # tg      - a task graph as described by read_TG
 # outfile - the path to write to
 def write_TG(tg,outfile)
-  `rm outfile`
+  `rm #{outfile}`
   File.open(outfile, 'w') do |out|
     tg[0].each do |node|
       out.write("NODE #{node[0]} #{node[1]}\n")
