@@ -5,8 +5,16 @@
 # used to implement remapping algorithims
 
 
-
-
+# normalized average traffic flow occupancy delta
+# tg      - the task graph(default mapping). see read_TG(infile) for format
+# mapping - the replacement stratedgy
+# n       - n column mesh
+def normalized_avg_tfo_delta(tg,mapping,n)
+  return tg[1].inject(0){ |sum,edge|
+    sum+= (traffic_flow_occupancy(tg,{},edge[0],edge[1],n) - 
+           traffic_flow_occupancy(tg,mapping,edge[0],edge[1],n)).abs
+  }/(avg_traffic_flow_occupancy(tg,{},n)*tg[1].size).to_f
+end
 
 # averages traffic_flow_occupancy() for every edge in tg
 # tg      - the task graph. see read_TG(infile) for format
@@ -15,7 +23,7 @@
 def avg_traffic_flow_occupancy(tg,mapping,n)
   return tg[1].inject(0){ |sum,edge|
     sum += traffic_flow_occupancy(tg,mapping,edge[0],edge[1],n)
-  }/tg[1].size
+  }/tg[1].size.to_f
 end
 
 

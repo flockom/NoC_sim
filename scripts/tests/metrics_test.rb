@@ -50,8 +50,12 @@ class MetricsTest < Test::Unit::TestCase
     # load up task graph test1
     tg1 = read_TG('./task-graphs/test_tfo1')
     #test with default mapping 5+4+12/3
-    assert_equal((5+4+12)/3,avg_traffic_flow_occupancy(tg1,{},4))
+    assert_equal((5+4+12)/3.0,avg_traffic_flow_occupancy(tg1,{},4))
     #test with core 0 mapped to core 2
-    assert_equal((5+8+6)/3,avg_traffic_flow_occupancy(tg1,{0=>2},4))
+    assert_equal((5+8+6)/3.0,avg_traffic_flow_occupancy(tg1,{0=>2},4))
+  end
+
+  def test_normalized_avg_tfo_delta(tg,mapping,n)
+    
   end
 end
