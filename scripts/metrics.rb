@@ -33,7 +33,7 @@ def traffic_flow_occupancy(tg,mapping,i,j,n)
   # get the volume
   tg[1].each do |edge|
     if(edge[0] == i && edge[1] == j )
-      volume = edge[3] 
+      volume = edge[2] 
     end
   end
   return volume * hop_count_XY(pi,pj,n)
