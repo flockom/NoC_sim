@@ -1,0 +1,19 @@
+# this is to test (avg_)traffic_flow_occupancy (tfo)
+# assume 4x4 mesh
+NODE 0 1
+
+NODE 1 1
+EDGE 0 1 5    # tfo = 1*5
+
+
+NODE 8 1
+EDGE 0 8 2    # tfo = 2*2
+
+NODE 10 1
+EDGE 0 10 3   # tfo = (2+2)*3
+
+
+
+
+
+
