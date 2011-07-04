@@ -1,0 +1,21 @@
+# this is to test total tfo
+# so we want a node with both parents and children
+# and some edges that should not be counted
+NODE 0 1
+NODE 1 1
+
+NODE 2 1 
+
+NODE 3 1
+NODE 4 1
+
+# these involve 2
+EDGE 0 2 2 #tfo = 4
+EDGE 1 2 2 #tfo = 2
+EDGE 2 3 4 #tfo = 4
+EDGE 2 4 1 #tfo = 3
+
+#these don't
+EDGE 0 1 5
+EDGE 4 3 2
+EDGE 4 0 1
