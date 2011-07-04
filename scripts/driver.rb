@@ -3,6 +3,7 @@
 # some routes for automating the nirgam task graph node (TGN) application
 
 require_relative 'scrape.rb'
+require_relative 'algorithms.rb'
 
 # TODO: - run_replacement cannot do a replacement to a tile 
 #         which is in the default mapping
@@ -61,26 +62,6 @@ def run_all_replacements_given_faulty(nirgam,tg,faulty,replacement)
   return results
 end
 
-# gives all possible mappings from a set of faulty cores f to
-# possible replacement cores r
-#
-# f::  an array of faulty cores ex. [3,4]
-# r::  the possible replacement cores ex. [5,11,17,23,29]
-#
-# returns an array of the mappings
-#  ex: [{3=>5,4=>23},{3=>23,4=>5},...] (20 of them for the example)
-def get_mappings(f,r)
-  results = Array.new
-  r.combination(f.length) do |comb|
-    comb.permutation do |perm|      
-      m = Hash.new
-      f.each_index {|i| m[f[i]] = perm[i]}
-      results.push(m)
-    end
-  end  
-  return results
-end
-
 # runs nirgam using the TGN application with a given replacement
 # stratedgy.
 # nirgam    -  the path to the nirgam root directory with a '/' at the end
@@ -126,8 +107,3 @@ def average_tt_latency(tt_latency)
   end
   return result
 end
-
-
-
-
-

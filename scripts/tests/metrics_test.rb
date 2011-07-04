@@ -55,7 +55,31 @@ class MetricsTest < Test::Unit::TestCase
     assert_equal((5+8+6)/3.0,avg_traffic_flow_occupancy(tg1,{0=>2},4))
   end
 
-  def test_normalized_avg_tfo_delta(tg,mapping,n)
+  def test_normalized_avg_tfo_delta
+    # load up task graph test1
+    tg1 = read_TG('./task-graphs/test_tfo1')
+
+    assert_equal(0,normalized_avg_tfo_delta(tg1,{},4))
+    assert_equal(10/21.0,normalized_avg_tfo_delta(tg1,{0=>2},4))
+  end
+
+  def test_tfo_delta_variance
+    # load up task graph test1
+    tg1 = read_TG('./task-graphs/test_tfo1')
     
+    assert_equal(0,tfo_delta_variance(tg1,{},4))
+    assert_equal(Math.sqrt(((0/7-10/21)**2+(4/7-10/21)**2+(6/7-10/21)**2)/3),tfo_delta_variance(tg1,{},4))
+  end
+
+  def test_total_tfo
+    # load up task graph test1
+    tg1 = read_TG('./task-graphs/test_tfo1')
+
+    assert_equal(5+4+12,total_tfo(tg1,{},0,4))
+    assert_equal(5+8+6,total_tfo(tg1,{0=>2},0,4))
+    assert_equal(12,total_tfo(tg1,{},10,4))
+    
+    tg2 = read_TG('./task-graphs/test_tfototal')
+    assert_equal(13,total_tfo(tg2,{},2,4))
   end
 end
