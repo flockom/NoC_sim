@@ -12,7 +12,7 @@
 # weight  - weight given to average, weight given to variance is 1-weight
 
 def similarity(tg,mapping,n,weight)
-  return weight*avg_traffic_flow_occupancy(tg,mapping,n) + (1-weight)*tfo_delta_variance(tg,mapping,n)
+  return weight*normalized_avg_tfo_delta(tg,mapping,n) + (1-weight)*tfo_delta_variance(tg,mapping,n)
 end
 
 # normalized average variation of traffic flow occupancy difference

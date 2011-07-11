@@ -5,29 +5,77 @@
 
 require_relative 'metrics.rb'
 
-
 def greedy(tg,faulty,replacements,n,weight)
+  solution = Hash.new
+  tgp = copy_tg(tg)
+  repl = Array.new(replacements)
   #sort faulty on total tfo from the default mapping
   faulty.sort!{|a,b| 
-    total_tfo(tg,{},a,n) <=> total_tfo(tg,{},b,n)
+    total_tfo(tgp,{},b,n) <=> total_tfo(tgp,{},a,n) # sort by max
+    #total_tfo(tgp,{},a,n) <=> total_tfo(tgp,{},b,n) # sort by min
   }
   #remove all nodes/edges in faulty from tg
-  tgp = remove_nodes(tg,faulty)
+  tgf = remove_nodes!(tgp,faulty)
   faulty.each do |f|
-    #add each core back to tg and find its optimal replacement in order
-    
-    #add the optimal replacement into tg
+    #add each core back to tgp from tgf
+    move_node!(tgp,tgf,f)
+    #find its optimal replacement in order    
+    lopt = brute_force_optimal(tgp,[f],repl,n,weight)
+    solution.merge!(lopt)
+    #remove the choice from the redundant set
+    repl.delete(lopt[f])
+    #change f to lopt[f] in tgp and tgf
+    update_tg!(tgp,lopt)
+    update_tg!(tgf,lopt)
   end
+  solution
+end
+
+def update_tg!(tg,mapping)
+  mapping.each_pair do |old,new|
+    tg[0].each do |node|
+      node[0] = new if node[0] == old
+    end
+    
+    tg[1].each do |edge|
+      edge[0] = new if edge[0] == old
+      edge[1] = new if edge[1] == old
+    end
+  end
+end
+
+# move all nodes/edges in tga to tg which involve the node i
+# AND are present in tg
+# modifies: tg,tga
+def move_node!(tg,tga,i)
+  #first just add node i in
+  tga[0].each_index do |ii|
+    if (i == tga[0][ii][0])
+      tg[0].push(tga[0][ii])
+      tga[0][ii] = nil
+      break
+    end
+  end
+  #then add the edges, only add edges for which both nodes exist in tg  
+  tga[1].each_index do |ii|
+    if tg[0].index{|item| item[0] == tga[1][ii][0]} && tg[0].index{|item| item[0] == tga[1][ii][1]}
+      tg[1].push(tga[1][ii])
+      tga[1][ii] = nil
+    end
+  end
+  tga[0].compact!
+  tga[1].compact!
 end
 
 
 # removes a node from tg and returns it along with all of its edges in a seperate task graph
-# WARNING: modifies tg - should change this, but need to copy array manually, copy constructor does not recurse
+# WARNING - modifies tg
 # tg      - task graph to remove from
 # tiles   - array of tileIDs of nodes/edges to remove
-# returns - the nodes/edges removed in a seperate tg
-def remove_nodes(tg,tiles)
+# returns - the removed nodes/edges
+def remove_nodes!(tg,tiles)
   result = [Array.new,Array.new]
+
   tg[0].each_index {|n|      # remove nodes
     tiles.each do |i|
       if i == tg[0][n][0]
@@ -51,6 +99,18 @@ def remove_nodes(tg,tiles)
   return result
 end
 
+# copy constructor...err function
+def copy_tg(tg)
+  result = [Array.new(tg[0].size),Array.new(tg[1].size)]
+  tg[0].each_index do |n|
+    result[0][n] = Array.new(tg[0][n])
+  end
+  tg[1].each_index do |e|
+    result[1][e] = Array.new(tg[1][e])
+  end
+  result
+end
+
 #finds the optimal solution using brute force
 # tg           - the task graph with default mapping
 # faulty       - array of faulty cores in tg
@@ -58,9 +118,12 @@ end
 # n            - n column mesh
 #weight         - weight given to average, weight given to variance is 1-weight
 def brute_force_optimal(tg,faulty,replacements,n,weight)
+  if tg[1].size == 0 # special case if there are no edges(all replacements are equal)
+    return get_mappings(faulty,replacements)[0] # return the first mapping
+  end
   get_mappings(faulty,replacements).min do |a,b|
-    similarity(tg,a,n,weight) <=> similarity(tg,b,n,weight)
-  end  
+      similarity(tg,a,n,weight) <=> similarity(tg,b,n,weight)
+  end
 end
 
 

@@ -77,7 +77,7 @@ void TGN::send(){
 	      wait();            
 	    }
 	    flit_outport.write(*flit_out);	
-	    wait(2);
+	    wait(6);
 	  }
 	}
       }
@@ -94,9 +94,9 @@ void TGN::recv(){
 
   /*~+~+~+~+~+~+~+~+~For Nirgam sim_results+~+~+~+~+~+~+~+~+~+~+~+~+~*/      
   int difference;
-  sum = 0; 
+  sum = 0;
   /*~+~+~+~+~+~+~+~+~+~+~+~+~+~+~+~+~+~+~+~+~+~+~+~+~+~+~+~*/
-
+  int communication_start; /*to measure communication time*/
   while(true){
     wait();
     if(flit_inport.event()){
@@ -117,10 +117,16 @@ void TGN::recv(){
 		<< flit_in.simdata.gtimestamp << " " 
 		<< sim_count << " "
 		<< difference <<endl;
-      if(++recv_buf[src] == parent_volume[src]){
+      if(recv_buf[src] == 0){ /*first packet in communication period*/
+	communication_start = flit_in.simdata.gtimestamp;
+      }
+      if(++recv_buf[src] == parent_volume[src]){/*last packet in communication period*/
 	parent_period_count[src]++;
 	recv_buf[src] = 0;
 	//printf("Tile-%d: Dependency #%d satisfied from %d\n",tileID,parent_period_count[src],src);
+	trafstream << "communication_time " << sim_count - communication_start
+		   << " on period "<< parent_period_count[src]
+		   << " from tile "<< src<<endl;
       }      
     }
   }
