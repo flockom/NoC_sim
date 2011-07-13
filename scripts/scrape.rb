@@ -64,19 +64,50 @@ def oal(file)
   return nil
 end
 
-
-def get_tt_latency(dir)
+# gets the average per flit latency for every traffic log file in dir
+# typicall dir is 'nirgam/log/traffic/'
+# it will contain a tile-n file for every task in the last run of the TGN application.
+#
+# dir must contain only the traffic log files from the most recent nirgam run.
+# the driver will delete the old files before running nirgam but you must delete them manually
+# if you do not use the driver.
+def get_average_tt_latency(dir)
   result = Hash.new
   counts = Hash.new
   Dir.foreach(dir) do |item|
     if (log = /tile-(\d+)$/.match(item))
       id = log[1].to_i
       File.open(dir+item,'r').each do |line|
-        match  = /^recv (\d+) (\d+) (\d+) (\d+)/.match(line)
-        result[{match[1].to_i=>id}] = 0 if !result[{match[1].to_i=>id}]
-        counts[{match[1].to_i=>id}] = 0 if !counts[{match[1].to_i=>id}]
-        result[{match[1].to_i=>id}] += match[4].to_i
-        counts[{match[1].to_i=>id}] += 1
+        if (match  = /^recv (\d+) (\d+) (\d+) (\d+)/.match(line))
+          result[{match[1].to_i=>id}] = 0 if !result[{match[1].to_i=>id}]
+          counts[{match[1].to_i=>id}] = 0 if !counts[{match[1].to_i=>id}]
+          result[{match[1].to_i=>id}] += match[4].to_i
+          counts[{match[1].to_i=>id}] += 1
+        end
+      end
+    end    
+  end
+  #get the averages
+  result.each_pair do |key,val|
+    result[key] = val/counts[key].to_f
+  end
+  return result
+end
+
+
+def get_tt_average_comm_time(dir)
+  result = Hash.new
+  counts = Hash.new
+  Dir.foreach(dir) do |item|
+    if (log = /tile-(\d+)$/.match(item))
+      id = log[1].to_i
+      File.open(dir+item,'r').each do |line|
+        if (match  = /^communication_time (\d+) on period (\d+) from tile (\d+)/.match(line))
+          result[{match[3].to_i=>id}] = 0 if !result[{match[3].to_i=>id}]
+          counts[{match[3].to_i=>id}] = 0 if !counts[{match[3].to_i=>id}]
+          result[{match[3].to_i=>id}] += match[1].to_i
+          counts[{match[3].to_i=>id}] += 1
+        end
       end
     end    
   end

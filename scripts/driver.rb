@@ -87,13 +87,13 @@ def run_replacement(nirgam,tg,stratedgy)
     end
   end
   # write tg
-  write_TG(task_graph,nirgam+"config/traffic/TGN")
-  # run nirgam
-  `cd #{nirgam};./nirgam`
+  write_TG(task_graph,nirgam+"config/traffic/TGN")    
+  # remove old traffic logs and run nirgam
+  `cd #{nirgam};rm ./log/traffic/*;./nirgam`
   # get OAL
   average_latency = oal(nirgam+"results/BTY/stats/sim_results")
   # get tt_latency
-  tt_latency = get_tt_latency(nirgam+"log/traffic/")
+  tt_latency = get_average_tt_latency(nirgam+"log/traffic/")
   # return [tt_latency,OAL]  
   return [average_latency,tt_latency]
 end

@@ -31,6 +31,10 @@ def greedy(tg,faulty,replacements,n,weight)
   solution
 end
 
+
+# modifies tg so that it reflects the mapping
+# tg      -  a task graph
+# mapping - a hash of old_tid=>new_tid
 def update_tg!(tg,mapping)
   mapping.each_pair do |old,new|
     tg[0].each do |node|
@@ -42,6 +46,7 @@ def update_tg!(tg,mapping)
       edge[1] = new if edge[1] == old
     end
   end
+  return tg
 end
 
 # move all nodes/edges in tga to tg which involve the node i
@@ -99,7 +104,7 @@ def remove_nodes!(tg,tiles)
   return result
 end
 
-# copy constructor...err function
+# copy constructor...err function... method
 def copy_tg(tg)
   result = [Array.new(tg[0].size),Array.new(tg[1].size)]
   tg[0].each_index do |n|
