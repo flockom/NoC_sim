@@ -11,8 +11,10 @@
 # n       - n column mesh
 # weight  - weight given to average, weight given to variance is 1-weight
 # sim     - a hash of {src=>dest}=>communication_time - if its nil then tfo is used
-def similarity(tg,mapping,n,weight,sim = nil)
-  return weight*normalized_avg_tfo_delta(tg,mapping,n,sim) + (1-weight)*tfo_delta_variance(tg,mapping,n,sim)
+# default - a hash of {src=>dest}=>communication_time for the default mapping i.e. tg
+def similarity(tg,mapping,n,weight,sim = nil, default = nil)
+  return weight*normalized_avg_tfo_delta(tg,mapping,n,sim,default) + 
+    (1-weight)*tfo_delta_variance(tg,mapping,n,sim,default)
 end
 
 # normalized average variation of traffic flow occupancy difference
@@ -20,11 +22,12 @@ end
 # mapping - the replacement stratedgy
 # n       - n column mesh
 # sim     - a hash of {src=>dest}=>communication_time - if its nil then tfo is used
-def tfo_delta_variance(tg,mapping,n,sim = nil)
-  avg = avg_traffic_flow_occupancy(tg,{},n,sim)
-  avg_dif = normalized_avg_tfo_delta(tg,mapping,n,sim)
+# default - a hash of {src=>dest}=>communication_time for the default mapping i.e. tg
+def tfo_delta_variance(tg,mapping,n,sim = nil, default = nil)
+  avg = avg_traffic_flow_occupancy(tg,{},n,sim,default)
+  avg_dif = normalized_avg_tfo_delta(tg,mapping,n,sim,default)
   Math.sqrt(tg[1].inject(0.0){ |sum,edge|
-              sum + (tfo_delta(tg,mapping,edge[0],edge[1],n,sim)/avg - avg_dif)**2
+              sum + (tfo_delta(tg,mapping,edge[0],edge[1],n,sim,default)/avg - avg_dif)**2
             }/tg[1].size)
 end
 
@@ -34,10 +37,11 @@ end
 # mapping - the replacement stratedgy
 # n       - n column mesh
 # sim     - a hash of {src=>dest}=>communication_time - if its nil then tfo is used
-def normalized_avg_tfo_delta(tg,mapping,n,sim = nil)
+# default - a hash of {src=>dest}=>communication_time for the default mapping i.e. tg
+def normalized_avg_tfo_delta(tg,mapping,n,sim = nil, default = nil)
   tg[1].inject(0.0){ |sum,edge|
-    sum + tfo_delta(tg,mapping,edge[0],edge[1],n,sim)
-  }/(avg_traffic_flow_occupancy(tg,{},n,sim)*tg[1].size)
+    sum + tfo_delta(tg,mapping,edge[0],edge[1],n,sim,default)
+  }/(avg_traffic_flow_occupancy(tg,{},n,sim,default)*tg[1].size)
 end
 
 # averages traffic_flow_occupancy() for every edge in tg
@@ -45,9 +49,10 @@ end
 # mapping - the replacement stratedgy
 # n       - n column mesh
 # sim     - a hash of {src=>dest}=>communication_time - if its nil then tfo is used
-def avg_traffic_flow_occupancy(tg,mapping,n, sim = nil)
+# default - a hash of {src=>dest}=>communication_time for the default mapping i.e. tg
+def avg_traffic_flow_occupancy(tg,mapping,n, sim = nil, default = nil)
   tg[1].inject(0.0){ |sum,edge|
-    sum + traffic_flow_occupancy(tg,mapping,edge[0],edge[1],n,sim)
+    sum + traffic_flow_occupancy(tg,mapping,edge[0],edge[1],n,sim,default)
   }/tg[1].size
 end
 
@@ -57,8 +62,9 @@ end
 # i,j     - get the difference on edge i->j
 # n       - n column mesh
 # sim     - a hash of {src=>dest}=>communication_time - if its nil then tfo is used
-def tfo_delta(tg,mapping,i,j,n,sim = nil)
-  (traffic_flow_occupancy(tg,{},i,j,n,sim) - traffic_flow_occupancy(tg,mapping,i,j,n,sim)).abs
+# default - a hash of {src=>dest}=>communication_time for the default mapping i.e. tg
+def tfo_delta(tg,mapping,i,j,n,sim = nil,default = nil)
+  (traffic_flow_occupancy(tg,{},i,j,n,sim,default) - traffic_flow_occupancy(tg,mapping,i,j,n,sim,default)).abs
 end
 
 
@@ -68,10 +74,11 @@ end
 # i       - total_tfo for core i(in tg not mapping)
 # n       - n column mesh
 # sim     - a hash of {src=>dest}=>communication_time - if its nil then tfo is used
-def total_tfo(tg,mapping,i,n,sim = nil)  
+# default - a hash of {src=>dest}=>communication_time for the default mapping i.e. tg
+def total_tfo(tg,mapping,i,n,sim = nil,default = nil)  
   tg[1].inject(0) {|sum,edge|
     if(edge[0] == i || edge[1] == i)
-      sum + traffic_flow_occupancy(tg,mapping,edge[0],edge[1],n,sim)
+      sum + traffic_flow_occupancy(tg,mapping,edge[0],edge[1],n,sim,default)
     else
       sum
     end
@@ -84,13 +91,15 @@ end
 # i,j     - get the occupancy from virtual cores i->j
 # n       - n column mesh
 # sim     - a hash of {src=>dest}=>communication_time - if its nil then tfo is used
-def traffic_flow_occupancy(tg,mapping,i,j,n,sim = nil)  
+# default - a hash of {src=>dest}=>communication_time for the default mapping i.e. tg
+def traffic_flow_occupancy(tg,mapping,i,j,n,sim = nil,default = nil)  
   # get the physical core location
   pi = (mapping[i] == nil)? i : mapping[i]
   pj = (mapping[j] == nil)? j : mapping[j]
   
-  if sim != nil
-    return sim[{pi=>pj}]
+  if sim != nil    
+    return sim[{pi=>pj}]     if mapping != {}
+    return default[{pi=>pj}] 
   end
 
   volume = 0

@@ -5,6 +5,8 @@
 
 require_relative 'metrics.rb'
 
+
+
 def greedy(tg,faulty,replacements,n,weight)
   solution = Hash.new
   tgp = copy_tg(tg)

@@ -13,11 +13,9 @@ void TGN::init(){
   char str_id[20];     // 20 digits in UL, log(2^64)
   sprintf(str_id,"%d",tileID);
 
-  /*delete the log file log/traffic/tile-n*/
+  /*traffic log file log/traffic/tile-n*/
   string logfile = string("./log/traffic/tile-") + string(str_id);
-  string rmlog = string("rm ") + logfile;
-  cout << "Running " << rmlog << endl;
-  system(rmlog.c_str());
+
 
   /*open the traffic stream*/  
   trafstream.open(logfile.c_str());
