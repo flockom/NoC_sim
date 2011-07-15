@@ -7,6 +7,25 @@ require_relative 'metrics.rb'
 
 
 
+# going to cheat here, instead of implementing hungarian alg.
+# I will do brute-force search of the matrix... result is the same ;)
+# when n becomes too large I might have to implement it properly
+def hungarian(tg,faulty,replacements,n,weight)
+  cost = lambda {|mapping| 
+    mapping.each_pair.inject(0.0) {|sum,kv|
+      sum+similarity(tg,{kv[0]=>kv[1]},n,weight)
+    }
+  }
+  get_mappings(faulty,replacements).min do |a,b|
+    cost.call(a) <=> cost.call(b)
+  end
+end
+
+# randomly picks a mapping
+def random(tg,faulty,replacements,n,weight)
+
+end
+
 def greedy(tg,faulty,replacements,n,weight)
   solution = Hash.new
   tgp = copy_tg(tg)
