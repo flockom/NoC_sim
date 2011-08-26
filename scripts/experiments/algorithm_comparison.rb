@@ -42,36 +42,46 @@ app1 = [a1f1,a1f2,a1f3,a1f4,a1f5]
 
 
 File.open(ARGV[0], 'w') do |out|
-  # write some info
-  out.write "info:\n"
-  out.write "weights are 0.5 on average and variance for all experiments\n"
-  out.write "the task graph gives the default mapping\n"
-  out.write "\n\n\n"
-  
-  # column names
-  out.write("Task Graph, Replacement Cores,Faulty Cores,"+
-            "Optimal Re-Mapping (metric),\"Optimal Re-Mapping Similarity (metric, to default)\","+
-            "Greedy Re-Mapping,Greedy Re-Mapping Similarity (to default),"+
-            "Hungarian Re-Mapping,Hungarian Re-Mapping Similarity (to default)\n")
-  
-  
-  out.write("Application 1\n")
-  out.write("#{tg},#{replacements}\n")  
-  app1.each do |fs|
-    out.write(",#{fs[0]}\n")
-    fs[1].each do |f|
-      opt = brute_force_optimal(tg,f,replacements,cols,weight)
-      opt_sim = similarity(tg,opt,cols,weight)
-      greed = greedy(tg,f,replacements,cols,weight)    
-      hung = hungarian(tg,f,replacements,cols,weight)
+  File.open("histo.dat", 'w') do |hist|
+    # write some info
+    out.write "info:\n"
+    out.write "weights are 0.5 on average and variance for all experiments\n"
+    out.write "the task graph gives the default mapping\n"
+    out.write "\n\n\n"
+    
+    # column names
+    out.write("Task Graph, Replacement Cores,Faulty Cores,"+
+              "Optimal Re-Mapping (metric),\"Optimal Re-Mapping Similarity (metric, to default)\","+
+              "Greedy Re-Mapping,Greedy Re-Mapping Similarity (to default),"+
+              "Hungarian Re-Mapping,Hungarian Re-Mapping Similarity (to default),"+
+              "Random Re-Mapping,Random Re-Mapping Similarity (to default)\n")
+    
+    avgs = Array.new(4){0.0} # one for each alg
+    out.write("Application 1\n")
+    out.write("#{tg},#{replacements}\n")
+    app1.each do |fs|
+      out.write(",#{fs[0]}\n")
+      fs[1].each do |f|
+        opt = brute_force_optimal(tg,f,replacements,cols,weight)
+        greed = greedy(tg,f,replacements,cols,weight)    
+        hung = hungarian(tg,f,replacements,cols,weight)
+        random = random(tg,f,replacements,cols,weight)
 
-      greedy_sim = similarity(tg,greed,cols,weight)
-      hung_sim = similarity(tg,hung,cols,weight)
-      # TODO: add hungarian here
-      out.write(",,#{f},#{opt},#{opt_sim},#{greed},#{greedy_sim},#{hung},#{hung_sim}\n")
+        opt_sim = similarity(tg,opt,cols,weight)
+        greedy_sim = similarity(tg,greed,cols,weight)
+        hung_sim = similarity(tg,hung,cols,weight)
+        random_sim = similarity(tg,random,cols,weight)      
+        out.write(",,#{f},#{opt},#{opt_sim},#{greed},#{greedy_sim},#{hung},#{hung_sim},#{random},#{random_sim}\n")
+
+        #get the averages for the graph
+        avgs[0] += opt_sim/fs[1].size
+        avgs[1] += greedy_sim/fs[1].size
+        avgs[2] += hung_sim/fs[1].size
+        avgs[3] += random_sim/fs[1].size
+      end
+      hist.write("#{avgs[0]} #{avgs[1]} #{avgs[2]} #{avgs[3]}\n")
+      out.write("\n")
     end
-    out.write("\n")
   end
-
 end
 

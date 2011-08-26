@@ -23,7 +23,7 @@ end
 
 # randomly picks a mapping
 def random(tg,faulty,replacements,n,weight)
-
+  get_mappings(faulty,replacements).sample
 end
 
 def greedy(tg,faulty,replacements,n,weight)
