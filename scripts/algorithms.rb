@@ -21,11 +21,12 @@ def hungarian(tg,faulty,replacements,n,weight)
   end
 end
 
-# randomly picks a mapping
+# random algorithm - randomly picks a mapping
 def random(tg,faulty,replacements,n,weight)
   get_mappings(faulty,replacements).sample
 end
 
+#greedy algorithm
 def greedy(tg,faulty,replacements,n,weight)
   solution = Hash.new
   tgp = copy_tg(tg)

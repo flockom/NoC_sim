@@ -14,6 +14,10 @@
 # id       - the tileID of the node
 # exec     - the execution time per cycle of the node
 #
+# note: 0<=tileID<=NUM_ROWS*NUM_COLS (see nirgam.config)
+#       units of exec is cycles[systemC::wait(exec)]
+#       units of volume is flits[nirgam::create_hdt_flit()]
+#
 # return: an array of the form
 # TG    -> [NODES,EDGES]
 # NODES -> [[id,exec],[id,exec],...,[id,exec]]
