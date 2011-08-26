@@ -1,0 +1,66 @@
+#random number seed
+seed 343
+
+# 2 graphs
+tg_cnt 5
+
+# 10 tasks (+/- 1 task)
+task_cnt 10 1
+
+
+# list of integers, one is randonly selected for each graph
+# scales the # tasks by the multiplier selected
+# we want it to always be 1.
+# (so task# is driven only by task_cnt)
+period_mul 1
+
+# Sets the number of task types
+task_type_cnt 10
+
+# Sets the number of arc types
+trans_type_cnt 10
+
+
+# TABLES
+
+# we need a table for the execution times associated
+# with each task
+# table name
+table_label EXEC
+
+# generate one 
+table_cnt 1
+
+#no table attributes (it has a default)
+table_attrib 
+
+# execution time attribute one for each task type
+# name,average,multiplier,jitter,rounding probability.
+# we want our execution times to be integers(clock cycles)
+# and so the rounding probability is 1.
+# this also generates an extra column called 'version'
+# it has no meaning.
+type_attrib exec_time 100 20 0 1
+
+#write the previous table specification as a 
+#processing element(node) table
+pe_write
+
+
+# now generate a table for the data volume 
+# associated with each edge
+table_label VOLUME
+
+# generate one 
+table_cnt 1
+type_attrib volume 5 4 0 1
+trans_write
+
+
+
+# OUTPUT
+# write to a .tgff file (same name as this file)
+tg_write
+
+
+
