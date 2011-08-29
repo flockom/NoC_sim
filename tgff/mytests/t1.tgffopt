@@ -2,7 +2,7 @@
 seed 343
 
 # 2 graphs
-tg_cnt 5
+tg_cnt 1
 
 # 10 tasks (+/- 1 task)
 task_cnt 10 1
