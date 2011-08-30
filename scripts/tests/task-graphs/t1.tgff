@@ -1,0 +1,52 @@
+@HYPERPERIOD 400
+
+@EXEC 0 {
+# type version exec_time
+  0    0       95
+  1    0       87
+  2    0       112
+  3    0       96
+}
+
+
+
+@VOLUME 0 {
+# type  volume  
+  0     4       
+  1     2       
+  2     7       
+  3     9       
+  4     5       
+  5     1       
+  6     6       
+  7     3       
+  8     10       
+  9     8       
+}
+
+
+
+@TASK_GRAPH 0 {
+	PERIOD 400
+
+	TASK t0_0	TYPE 1 
+	TASK t0_1	TYPE 0 
+	TASK t0_2	TYPE 3 
+	TASK t0_3	TYPE 3 
+	TASK t0_4	TYPE 1 
+
+	ARC a0_0 	FROM t0_0  TO  t0_1 TYPE 7
+	ARC a0_1 	FROM t0_1  TO  t0_2 TYPE 6
+	ARC a0_2 	FROM t0_0  TO  t0_3 TYPE 3
+	ARC a0_3 	FROM t0_1  TO  t0_4 TYPE 3
+	ARC a0_4 	FROM t0_3  TO  t0_4 TYPE 9
+	ARC a0_5 	FROM t0_2  TO  t0_4 TYPE 6
+	ARC a0_6 	FROM t0_0  TO  t0_4 TYPE 0
+
+	HARD_DEADLINE d0_0 ON t0_4 AT 400
+}
+
+
+
+
+

@@ -5,7 +5,7 @@ seed 343
 tg_cnt 1
 
 # 10 tasks (+/- 1 task)
-task_cnt 10 1
+task_cnt 5 1
 
 
 # list of integers, one is randonly selected for each graph
@@ -15,7 +15,7 @@ task_cnt 10 1
 period_mul 1
 
 # Sets the number of task types
-task_type_cnt 10
+task_type_cnt 4
 
 # Sets the number of arc types
 trans_type_cnt 10
