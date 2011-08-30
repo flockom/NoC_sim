@@ -1,6 +1,6 @@
 # ttlatency.rb
 # Author: Frank Lockom
-# some routes for automating the nirgam task graph node (TGN) application
+# some routines for automating the nirgam task graph node (TGN) application
 
 require_relative 'scrape.rb'
 require_relative 'algorithms.rb'

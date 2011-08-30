@@ -3,7 +3,7 @@
 
 # handles file IO associated with tgff
 
-#TODO: add support for multiple task graphs in one file
+#TODO: add support for multiple task graphs in one file?? when its useful.
 
 
 
@@ -72,6 +72,71 @@ def read_tgff(infile)
   result[1].each do |e|
     e[2] = vol[edge_type[edge_index[[e[0],e[1]]]]]
   end
+
+  result
+
+end
+
+
+
+# uses TGFF to generate a random task graph in the format 
+# described in scrape.rb:read_TG.
+# This uses the "old algorithm" as refered to in the tgff documentation
+# a notable parameter which is left out is
+# the maximum in/out degree on nodes. Could me added
+# if more control of the graph structure is desired
+# also could consider a different function which uses the "new algorithm"
+# which allows for even more control of the graph's structure.
+#
+# All of the parameters share the same name as those used in tgff where applicable
+# 
+# seed            - the random seed for tgff (integer) 
+# task_cnt          - number of tasks in the graph (+/- 1) 
+# task_type_cnt   - 1 means all tasks have same execution time, 
+#                   num_taks means the (could) all be different
+# trans_type_cnt  - 1 means all edges have the same volume
+# avg_exec_time   - execution time is random: [-1,1)*exec_time_mult + avg_exec_time
+# exec_time_mult  - see avg_exec_time
+# avg_volume      - see avg_exec_time
+# volume_mult     - ^^^ get it yet?
+#
+def generate_tg(seed,task_cnt,task_type_cnt,trans_type_cnt,
+                avg_exec_time,exec_time_mult,
+                avg_volume,volume_mult)
+
+  tgffopt = <<END
+# general tgff options
+seed #{seed}
+tg_cnt #{1}
+task_cnt #{task_cnt} 1
+period_mul #{1}
+task_type_cnt #{task_type_cnt}
+trans_type_cnt #{trans_type_cnt}
+
+# create the execution time table
+table_label EXEC
+table_cnt 1
+table_attrib
+type_attrib exec_time #{avg_exec_time} #{exec_time_mult} 0 1
+pe_write
+
+# create the volume table
+table_label VOLUME
+table_cnt 1
+type_attrib volume #{avg_volume} #{volume_mult} 0 1
+trans_write
+
+#output the graph
+tg_write
+
+END
+
+  File.open('./temp.tgffopt','w') {|f| f.write(tgffopt)}
+  `tgff temp`
+  result = read_tgff('temp.tgff')
+  
+  `rm ./temp.tgffopt`
+  `rm ./temp.tgff`
 
   result
 
