@@ -100,10 +100,14 @@ end
 # avg_volume      - see avg_exec_time
 # volume_mult     - ^^^ get it yet?
 #
+#EX: generate_tg(1,10,10,30,100,20,10,2)
+#
 def generate_tg(seed,task_cnt,task_type_cnt,trans_type_cnt,
                 avg_exec_time,exec_time_mult,
+
                 avg_volume,volume_mult)
 
+# tgff configuration file
   tgffopt = <<END
 # general tgff options
 seed #{seed}
@@ -131,12 +135,11 @@ tg_write
 
 END
 
-  File.open('./temp.tgffopt','w') {|f| f.write(tgffopt)}
-  `tgff temp`
-  result = read_tgff('temp.tgff')
+  File.open('./temp.tgffopt','w') {|f| f.write(tgffopt)} # write the config
+  `tgff temp` # generate the tgff file
+  result = read_tgff('temp.tgff') # convert to internal format
   
-  `rm ./temp.tgffopt`
-  `rm ./temp.tgff`
+  `rm ./temp.tgffopt ./temp.tgff ./temp.vcg ./temp.eps` #cleanup
 
   result
 

@@ -13,4 +13,11 @@ class TGFFScrapeTest < Test::Unit::TestCase
     actual = read_tgff('task-graphs/t1.tgff')
     assert_equal(should,actual)
   end
+
+  def test_generate_tg
+    #same random seed should give same graph...for 1 to 10?
+    for i in 1..10 do
+      assert_equal(generate_tg(i,10,5,6,100,20,10,5),generate_tg(i,10,5,6,100,20,10,5))
+    end
+  end
 end

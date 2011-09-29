@@ -53,6 +53,21 @@ def greedy(tg,faulty,replacements,n,weight)
   solution
 end
 
+#finds the optimal solution using brute force
+# tg           - the task graph with default mapping
+# faulty       - array of faulty cores in tg
+# replacements - array of possible replacement cores 
+# n            - n column mesh
+#weight         - weight given to average, weight given to variance is 1-weight
+def brute_force_optimal(tg,faulty,replacements,n,weight)
+  if tg[1].size == 0 # special case if there are no edges(all replacements are equal)
+    return get_mappings(faulty,replacements)[0] # return the first mapping
+  end
+  get_mappings(faulty,replacements).min do |a,b|
+      similarity(tg,a,n,weight) <=> similarity(tg,b,n,weight)
+  end
+end
+
 
 # modifies tg so that it reflects the mapping
 # tg      -  a task graph
@@ -137,22 +152,6 @@ def copy_tg(tg)
   end
   result
 end
-
-#finds the optimal solution using brute force
-# tg           - the task graph with default mapping
-# faulty       - array of faulty cores in tg
-# replacements - array of possible replacement cores 
-# n            - n column mesh
-#weight         - weight given to average, weight given to variance is 1-weight
-def brute_force_optimal(tg,faulty,replacements,n,weight)
-  if tg[1].size == 0 # special case if there are no edges(all replacements are equal)
-    return get_mappings(faulty,replacements)[0] # return the first mapping
-  end
-  get_mappings(faulty,replacements).min do |a,b|
-      similarity(tg,a,n,weight) <=> similarity(tg,b,n,weight)
-  end
-end
-
 
 
 # gives all possible mappings from a set of faulty cores f to

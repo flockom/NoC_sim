@@ -107,3 +107,5 @@ def average_tt_latency(tt_latency)
   end
   return result
 end
+
+
