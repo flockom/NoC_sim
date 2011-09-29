@@ -59,7 +59,8 @@ end
 # generates x random faulty set of size n from
 # the task graph tg
 def generate_faulty_set(tg,n,x)
-  get the faulty edges  a = tg[0].combination(n).to_a.sample x 
+  #get the faulty edges  
+  a  = Array.new(x){random_combination(tg[0],n)}
 
   #pull out the ids
   result = Array.new(a.size)
@@ -67,4 +68,15 @@ def generate_faulty_set(tg,n,x)
     result[i] = Array.new(n){|ii| v[ii][0]}    
   end
   result
+end
+
+# look for a better implementation later
+def random_combination(a,n)
+  comb = Array.new(a.size){|i|i}
+  #make |a| randomw swaps and pick the first n elements
+  comb.size.times do 
+    x,y = [rand(comb.size),rand(comb.size)]
+    comb[x],comb[y] = [comb[y],comb[x]]
+  end  
+  return Array.new(n){|i|a[comb[i]]}
 end
