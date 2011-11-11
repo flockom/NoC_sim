@@ -80,3 +80,4 @@ def random_combination(a,n)
   end  
   return Array.new(n){|i|a[comb[i]]}
 end
+

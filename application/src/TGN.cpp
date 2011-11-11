@@ -75,7 +75,7 @@ void TGN::send(){
 	      wait();            
 	    }
 	    flit_outport.write(*flit_out);	
-	    wait(6);
+	    wait(1); // this is the flit injection rate!
 	  }
 	}
       }

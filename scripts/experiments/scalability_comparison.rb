@@ -58,4 +58,46 @@ tgs.each_with_index do |tg,i|
 end
 
 
-puts results.to_s
+
+#write out the gnuplot data file
+results.size.times do |i|
+  File.open("scale_temp#{i}.dat", 'w') do |f|
+    results[i].each_with_index do |mesh_size,ii| 
+      f.write "#{ii+1} "#number of faulty cores
+      mesh_size.each do |faulty|
+        f.write "#{faulty} "
+      end
+      f.write "\n"
+    end
+  end
+end
+
+
+gnuplot = <<END
+set terminal png
+set output "scalability_comp.png"
+
+set style data linespoints
+
+#set format y ""
+#set format x ""
+
+#set title  ""
+
+set xlabel "Number of Faulty cores"
+set ylabel "Similarity to Default"
+
+
+plot 'scale_temp0.dat' using 1:2 t "", '' using 1:3 t "", '' using 1:4 t "",\
+     'scale_temp1.dat' using 1:2 t "", '' using 1:3 t "", '' using 1:4 t "",\
+     'scale_temp2.dat' using 1:2 t "", '' using 1:3 t "", '' using 1:4 t ""
+
+
+END
+
+
+File.open("s_temp.gnu", 'w') do |f|
+  f.write gnuplot
+end
+
+`gnuplot s_temp.gnu`
