@@ -5,6 +5,7 @@
 # used to implement remapping algorithims
 
 
+# As defined in Ke's paper
 # gets the similarity between the default and replacement stratedgy
 # tg      - the default mapping
 # mapping - the replacement stratedgy
@@ -17,6 +18,7 @@ def similarity(tg,mapping,n,weight,sim = nil, default = nil)
     (1-weight)*tfo_delta_variance(tg,mapping,n,sim,default)
 end
 
+# as defined in Ke's paper
 # normalized average variation of traffic flow occupancy difference
 # tg      - the task graph(default mapping). see read_TG(infile) for format
 # mapping - the replacement stratedgy
@@ -32,6 +34,7 @@ def tfo_delta_variance(tg,mapping,n,sim = nil, default = nil)
 end
 
 
+#As defined in Ke's paper
 # normalized average traffic flow occupancy delta
 # tg      - the task graph(default mapping). see read_TG(infile) for format
 # mapping - the replacement stratedgy
@@ -85,6 +88,7 @@ def total_tfo(tg,mapping,i,n,sim = nil,default = nil)
   }
 end
 
+# volume+hop count is communication time, volume*hop count is the TFO as originally defined in KE's paper
 # gets the traffic_flow_occupancy as defined in KE's paper
 # tg      - the task graph. see read_TG(infile) for format
 # mapping - the replacement stratedgy
@@ -118,3 +122,5 @@ end
 def hop_count_XY(i,j,n)
   (i%n - j%n).abs + (i/n - j/n).abs
 end
+
+
