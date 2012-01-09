@@ -18,7 +18,10 @@ def random_mapping(tg,n,m,redundant)
   #so we need a random sequence of unique numbers between 0 and nxm-1-redundant
   #... and thats our mapping!
   s = n*m-redundant.size
-  return nil if tg[0].size > s  # not enough cores for tasks , error
+  if tg[0].size > s
+    puts "Error: more tasks(#{tg[0].size}) than cores(#{s})! "
+    return nil   # not enough cores for tasks , error    
+  end
   mapping = Array.new(n*m) {|i| i}
 
   #swap the redundant cores to the end

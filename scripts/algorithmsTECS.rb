@@ -11,9 +11,10 @@ require_relative 'metricsTECS.rb'
 
 # greedy algorithm, replaces cores  by subtree size of the task mapped to it
 # minimizing the starting time of the task to be replaced at each step
+
 def greedy(tg,faulty,replacements,n)
   result = Hash.new
-
+  repl = Array.new(replacements.size) {|i| replacements[i]}
   # sort tg by # successors
   sort_by_subtree_size!(tg)
 
@@ -22,11 +23,11 @@ def greedy(tg,faulty,replacements,n)
   
   faulty.each do |fault|
     # pick the replacement which minimizes starting time of fault
-    choice = replacements.min_by{|a| euclidean_distance(tg,result.merge({fault=>a}),n)}
+    choice = repl.min_by{|a| euclidean_distance(tg,result.merge({fault=>a}),n)}
     # add the mapping to the solution
     result[fault] = choice
     # remove the replacement from the set
-    replacements.delete(fault)
+    repl.delete(choice)
   end
   return result
 end
