@@ -1,3 +1,7 @@
+# This experiment compares several algorithms average performance under a configurable number of mesh sizes
+
+# Author: Frank Lockom
+
 load '../../scrape.rb'
 load '../../algorithmsTECS.rb'
 load '../../mapping_algorithms.rb'
