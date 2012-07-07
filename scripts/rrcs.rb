@@ -31,24 +31,23 @@ def rrcs_1(tg,faulty,replacements,cols)
   mapping = Hash.new
   (rows*cols).times {|i| mapping[i] = (faulty.include?(i))?("faulty"):i}
 
-  puts "\n\n\n #{mapping}"
+#  puts "\n\n\n #{mapping}"
   #move down and up the rows until all rows are reconfigured.
-  finished = 0
+  finished = Array.new(rows){|i| false}
   row = 0
   direction = false # false - down, true - up
-  while( finished != rows) do
-    puts "\n\n row #{row}"
-    puts mapping
-    puts "row rippling "    
+  while( !finished.reduce(true){|all,i|all && i}) do
+#    puts "\n\n row #{row}"
+
+#    puts mapping
+#    puts "row rippling "    
     row_rippling1(mapping,row,replacements,cols)
-    puts mapping
-    puts "column stealing "
-    if (column_stealing1(mapping,row,replacements,cols,direction))
-      finished+=1
-    else
-      finished = 0
-    end
-    puts mapping
+
+#    puts mapping
+
+#    puts "column stealing "
+    finished[row] = column_stealing1(mapping,row,replacements,cols,direction)
+#    puts mapping
     
     # go to next row
     if direction # going up      
@@ -128,10 +127,10 @@ def row_rippling1(mapping,row, replacements,cols)
     else                           # move this core left      
       mapping[current] = mapping[marker]
       current+=1
-      if mapping[marker] == nil
-        puts "FUCK! #{row} #{replacements} #{cols}  #{marker} #{current}"
-        exit
-      end
+      # if mapping[marker] == nil
+      #   puts "FUCK! #{row} #{replacements} #{cols}  #{marker} #{current}"
+      #   exit
+      # end
 
       mapping[marker]  = "faulty"
     end
@@ -163,10 +162,10 @@ def column_stealing1(mapping,row, replacements,cols, direction)
         mapping[i] = mapping[steal]
         
         # excuse my pathetic debugging
-        if mapping[steal] == nil
-          puts "FUCK! #{row} #{replacements} #{cols} #{direction} #{i} #{steal}"
-          exit
-        end
+        # if mapping[steal] == nil
+        #   puts "FUCK! #{row} #{replacements} #{cols} #{direction} #{i} #{steal}"
+        #   exit
+        # end
         mapping[steal] = "faulty"
       end
     end

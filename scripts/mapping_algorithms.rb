@@ -58,12 +58,17 @@ def right_col_redundant(cols,rows)
   result = Array.new(rows){|i| cols-1 + i*cols}
 end
 
+# will be to the right for even column meshes
+def center_col_redundant(cols,rows)
+  results = Array.new(rows){|i| cols/2 + i*cols}
+end
+
 
 
 # generates x random faulty set of size n from
 # the task graph tg
 def generate_faulty_set(tg,n,x)
-  #get the faulty edges  
+  #get the faulty tasks
   a  = Array.new(x){random_combination(tg[0],n)}
 
   #pull out the ids
@@ -83,6 +88,39 @@ def random_combination(a,n)
     comb[x],comb[y] = [comb[y],comb[x]]
   end  
   return Array.new(n){|i|a[comb[i]]}
+end
+
+# takes a tg which is mapped to virtual cores i.e. on a cols_old*rows
+# topology, and remaps it to a new topology with redundant
+# cores given by the array redundant, no tasks will mapped to
+# redundant cores.
+# modifies tg
+def tg_virtual_to_physical!(tg,rows,cols_old,redundant)
+  mapping = Hash.new
+
+  offset = 0
+  (cols_old*rows).times do|i|    
+    offset+=1 if redundant.include?(offset+i)
+    mapping[i] = i+offset
+  end
+
+  update_tg!(tg,mapping)
+end
+
+# same thing as above but takes an array of faulty cores, make sure
+# they are not mapped to redundant cores
+# modifies faulty and redundant(only sorts redundant)
+def faulty_virtual_to_physical!(faulty,redundant)
+  faulty.sort!
+  redundant.sort!
+  offset = 0
+  faulty.size.times do |i|
+    while offset < redundant.size && redundant[offset]<=faulty[i]+offset do
+      offset+=1
+    end    
+    faulty[i] = faulty[i]+offset
+  end
+  faulty
 end
 
 # TODO: Write this 
