@@ -13,13 +13,14 @@ load '../../tgff_scrape.rb'
 start_time = Time.now
 
 # 3x3, 4x4, 5x5, 6x6, 7x7
-mesh_sizes = [[4,3],[5,4],[6,5],[7,6]]
+mesh_sizes = [[5,4]]
+#,[5,4],[6,5],[7,6]
 
 # generate num_graphs task graphs per mesh
-num_graphs = 5
+num_graphs = 20
 
 # generate num_faulty faulty sets per graph
-num_faulty = 5
+num_faulty = 20
 
 
 # generate the task graphs, their mappings and their faulty sets

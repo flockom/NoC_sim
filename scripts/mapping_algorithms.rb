@@ -63,6 +63,15 @@ def center_col_redundant(cols,rows)
   results = Array.new(rows){|i| cols/2 + i*cols}
 end
 
+# returns the cores which have no task mapped to them in tg
+def unmapped_redundant(tg,cols,rows)
+  results = Array.new(cols*rows){|i|i}
+  tg[0].each do |task|
+    results.delete(task[0])
+  end
+  results
+end
+
 
 
 # generates x random faulty set of size n from

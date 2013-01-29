@@ -1,0 +1,44 @@
+#see auto-indst-cords.graph from e3s
+#dummy task
+NODE 0 1
+# FFT 69 iterations/s
+NODE 1 4595
+#Matrix arithmetic 150 iterations/s
+NODE 2 2113
+#Inverse FFT 75 iterations/s
+NODE 3 4227
+# finite impulse response filter 14550 iterations/s
+NODE 4 21
+Angle to Time Conversion 111600 iterations/s
+NODE 5 3
+# Road Speed calculation 317080 iterations/s
+NODE 6 1
+# table lookup and interpolation 33675 iterations/s
+NODE 7 9
+# Sink
+NODE 8 1
+
+#see @COMMUN_QUANT 0 in mentioned file
+
+# ARC a2_2 FROM src TO fft TYPE 2(15E3)
+EDGE 0 1 8
+# ARC a2_3 FROM fft TO matrix TYPE 2(15E3)
+EDGE 1 2 8
+# ARC a2_4 FROM matrix TO ifft TYPE 2(15E3)
+EDGE 2 3 8
+# ARC a2_5 FROM ifft TO angle TYPE 2(15E3)
+EDGE 3 5 8
+
+
+# ARC a2_0 FROM src TO fir TYPE 0(4E3) 
+EDGE 0 4 6
+# ARC a2_1 FROM fir TO angle TYPE 0(4E3) 
+EDGE 4 5 6
+
+
+# ARC a2_6 FROM angle TO road TYPE 0(4E3) 
+EDGE 5 6 6
+# ARC a2_7 FROM road TO table TYPE 0(4E3) 
+EDGE 6 7 6
+# ARC a2_8 FROM table TO sink TYPE 3(1E3)
+EDGE 7 8 1

@@ -12,13 +12,13 @@ load '../../rrcs.rb'
 start_time = Time.now
 
 # 3x3, 4x4, 5x5, 6x6, 7x7
-mesh_sizes = [[4,3],[5,4],[6,5],[7,6]]
+mesh_sizes = [[4,3],[5,4],[6,5],[7,6],[8,7]]
 #
 # generate num_graphs task graphs per mesh
-num_graphs = 10
+num_graphs = 15
 
 # generate num_faulty faulty sets per graph
-num_faulty = 10
+num_faulty = 15
 
 # algorithms to test
 # [method(:random),method(:greedy),method(:brute_force_optimal)]
