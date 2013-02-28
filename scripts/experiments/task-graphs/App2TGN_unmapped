@@ -1,4 +1,9 @@
-#see auto-indst-cords.graph from e3s
+# see e3s-0.9/auto-indst-cords.graph. The task graph is @TASK_GRAPH 2.
+# The TYPE on each TASK resolves to the task name in
+# e3s-0.9/all-tasks.  e3s-0.9/auto-indust.html gives the iterations/s
+# of each task. This example uses data from the AMD ElanSC520-133 MHz
+# (first column).
+
 #dummy task
 NODE 0 1
 # FFT 69 iterations/s
@@ -18,7 +23,7 @@ NODE 7 9
 # Sink
 NODE 8 1
 
-#see @COMMUN_QUANT 0 in mentioned file
+#see @COMMUN_QUANT 0 in e3s-0.9/auto-indst-cords.graph
 
 # ARC a2_2 FROM src TO fft TYPE 2(15E3)
 EDGE 0 1 8
